@@ -1,0 +1,35 @@
+[project]
+name = "grappler"
+version = "0.1.0"
+description = "Load extensions into Python apps"
+authors = [{ name = "Te-je Rodgers", email = "tjd.rodgers@gmail.com" }]
+dependencies = ["typing-extensions>=4.3.0"]
+requires-python = ">=3.8"
+readme = "README.md"
+license = { text = "GPLv3" }
+[project.optional-dependencies]
+
+[build-system]
+requires = ["pdm-pep517>=1.0.0"]
+build-backend = "pdm.pep517.api"
+
+[tool]
+[tool.pdm]
+[tool.pdm.dev-dependencies]
+dev = [
+    "mypy>=0.971",
+    "black>=22.6.0",
+    "isort>=5.10.1",
+    "flake8>=4.0.1",
+    "flake8-print>=5.0.0",
+]
+test = ["pytest>=7.1.2"]
+
+
+[tool.isort]
+profile = "black"
+
+[tool.mypy]
+python_version = "3.8"
+strict = true
+
