@@ -1,4 +1,13 @@
-from typing import Any, Iterator, NamedTuple, Optional, Protocol, Tuple, TypeVar
+from typing import (
+    Any,
+    ContextManager,
+    Iterator,
+    NamedTuple,
+    Optional,
+    Protocol,
+    Tuple,
+    TypeVar,
+)
 
 T = TypeVar("T")
 
@@ -42,6 +51,14 @@ class Grappler(Protocol):
 
         May raise an UnknownExtensionError if the extension type is unknown.
         """
+
+
+class ResourcefulGrappler(Grappler, ContextManager[Grappler]):
+    """A Grappler which can also be used as a context manager.
+
+    This is a protocol for grapplers which wish to setup and teardown
+    resources in `__enter__` and `__exit__` methods respectively.
+    """
 
 
 class UnknownExtensionError(LookupError):
