@@ -1,0 +1,51 @@
+site_name: grappler
+
+repo_url: https://github.com/mr-rodgers/grappler
+repo_name: mr-rodgers/grappler
+
+nav:
+  - 'index.md'
+  - 'API Reference':
+    - api/core.md
+    - api/grapplers.md
+
+theme:
+  name: material
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: deep purple
+      accent: red
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: deep purple
+      accent: red
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+
+markdown_extensions:
+  - toc:
+      permalink: true
+  - admonition
+  - pymdownx.highlight:
+      anchor_linenums: true
+      use_pygments: true
+      guess_lang: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+
+plugins:
+- search
+- mkdocstrings:
+    default_handler: python
+    handlers:
+      python:
+        rendering:
+          show_source: false
+          show_root_heading: true
+          show_signature_annotations: true
