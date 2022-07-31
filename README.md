@@ -5,7 +5,7 @@ Load extensions into Python apps
 
 ## Documentation
 
-A copy of the documentation is hosted on https://mr-rodgers.github.com/grappler/.
+A copy of the documentation is hosted on https://mr-rodgers.github.io/grappler/.
 
 Documentation is build using [MkDocs](https://www.mkdocs.org/);
 To build, run the following command:
