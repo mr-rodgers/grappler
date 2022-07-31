@@ -1,3 +1,3 @@
-# Grapplers (Customize Loading Behavior)
+# Grapplers (Custom loading behavior)
 
 ::: grappler.grapplers

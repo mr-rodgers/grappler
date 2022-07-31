@@ -16,8 +16,8 @@ def grappler() -> StaticGrappler:
 @pytest.mark.parametrize(
     "input_package, expected_package",
     [
-        (None, StaticGrappler.internal_package()),
-        (StaticGrappler.internal_package(), StaticGrappler.internal_package()),
+        (None, StaticGrappler.internal_package),
+        (StaticGrappler.internal_package, StaticGrappler.internal_package),
         (
             Package("Foo", "1.4.2", "grappler.grapplers.foo-test", None),
             Package("Foo", "1.4.2", "grappler.grapplers.foo-test", None),
