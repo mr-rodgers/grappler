@@ -17,7 +17,7 @@ def static_grappler() -> StaticGrappler:
     )
 
     for i in range(10):
-        grappler.add_extension(["numbers"], i)
+        grappler.add_plugin(["numbers"], i)
 
     return grappler
 
@@ -94,16 +94,16 @@ def test_type_hinted_loading_ignores_non_supported_instances(
     static_grappler: StaticGrappler,
 ) -> None:
 
-    static_grappler.add_extension(["numbers", "boxes"], IntBox(1))
-    static_grappler.add_extension(["numbers", "boxes"], IntBox(2))
-    static_grappler.add_extension(["numbers", "boxes"], IntBox(3))
+    static_grappler.add_plugin(["numbers", "boxes"], IntBox(1))
+    static_grappler.add_plugin(["numbers", "boxes"], IntBox(2))
+    static_grappler.add_plugin(["numbers", "boxes"], IntBox(3))
 
-    static_grappler.add_extension(["strings", "boxes"], StrBox("foo"))
-    static_grappler.add_extension(["strings", "boxes"], StrBox("bar"))
-    static_grappler.add_extension(["strings", "boxes"], StrBox("baz"))
+    static_grappler.add_plugin(["strings", "boxes"], StrBox("foo"))
+    static_grappler.add_plugin(["strings", "boxes"], StrBox("bar"))
+    static_grappler.add_plugin(["strings", "boxes"], StrBox("baz"))
 
     # Add a non-box into the mix, to check if it will get excluded
-    static_grappler.add_extension(["boxes"], "this is not a box.")
+    static_grappler.add_plugin(["boxes"], "this is not a box.")
 
     hook = Hook[hook_type](hook_topic, grappler=static_grappler)  # type: ignore
     assert list(hook) == list(expected_values)

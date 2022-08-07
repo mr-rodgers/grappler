@@ -1,40 +1,32 @@
-"""
-hook
-====
-
-Entry point for extensions into an application.
-
-"""
-
 from functools import cached_property
 from typing import Any, Generator, Generic, Iterator, Optional, TypeVar, get_args
 
 from typing_extensions import TypeGuard
 
-from ._types import Extension, Grappler
+from ._types import Grappler, Plugin
 
 T = TypeVar("T")
 
 
 class Hook(Generic[T]):
-    def __init__(self, group_name: Optional[str], grappler: Grappler) -> None:
-        self.group_name = group_name
+    def __init__(self, topic: Optional[str], grappler: Grappler) -> None:
+        self.topic = topic
         self.grappler = grappler
 
     def __iter__(self) -> Iterator[T]:
         return self._iter_grappler(self.grappler)
 
     def grapple(self) -> Iterator[T]:
-        """Load one or more extensions matching this hook."""
+        """Load one or more plugins matching this hook."""
         return iter(self)
 
-    def can_support(self, extension: Extension) -> bool:
-        return self.group_name in extension.topics
+    def can_support(self, plugin: Plugin) -> bool:
+        return self.topic in plugin.topics
 
     def _iter_grappler(self, grappler: Grappler) -> Generator[T, None, None]:
-        for extension in grappler.find(self.group_name):
-            if self.can_support(extension):
-                loaded_obj = grappler.load(extension)
+        for plugin in grappler.find(self.topic):
+            if self.can_support(plugin):
+                loaded_obj = grappler.load(plugin)
                 if self.__is_valid_instance(loaded_obj):
                     yield loaded_obj
 

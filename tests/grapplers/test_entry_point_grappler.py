@@ -6,18 +6,18 @@ import pytest
 from grappler.grapplers import EntryPointGrappler
 
 
-def test_iterated_extension_semantics() -> None:
+def test_iterated_plugin_semantics() -> None:
     grappler = EntryPointGrappler()
 
-    all_extensions = [extension for extension in grappler.find()]
+    all_plugins = [plugin for plugin in grappler.find()]
 
     # topics are mapped from entry point groups
-    all_topics = {topic for ext in all_extensions for topic in ext.topics}
+    all_topics = {topic for ext in all_plugins for topic in ext.topics}
     assert all_topics.issuperset(["console_scripts", "pytest11"])
 
-    # package metadata is shared among extensions from the same package
-    all_packages = {ext.package for ext in all_extensions}
-    assert len(all_packages) < len(all_extensions)
+    # package metadata is shared among plugins from the same package
+    all_packages = {ext.package for ext in all_plugins}
+    assert len(all_packages) < len(all_plugins)
     assert {pkg.name for pkg in all_packages}.issuperset({"pytest"})
 
 
@@ -25,25 +25,25 @@ def test_iterated_extension_semantics() -> None:
 def test_load_by_topics(topic: str) -> None:
     grappler = EntryPointGrappler()
 
-    topic_extensions = [ext for ext in grappler.find(topic)]
+    topic_plugins = [ext for ext in grappler.find(topic)]
 
-    assert topic_extensions
-    assert len(topic_extensions) < len(list(grappler.find()))
+    assert topic_plugins
+    assert len(topic_plugins) < len(list(grappler.find()))
 
-    for ext in topic_extensions:
+    for ext in topic_plugins:
         assert grappler.load(ext) is not None
 
 
-def test_stable_extension_ids() -> None:
-    host_extension_ids = load_extension_ids()
+def test_stable_plugin_ids() -> None:
+    host_plugin_ids = load_plugin_ids()
 
     with Pool(10) as process_pool:
-        process_extension_ids = process_pool.map(load_extension_ids, range(10))
+        process_plugin_ids = process_pool.map(load_plugin_ids, range(10))
 
-    for extension_ids in process_extension_ids:
-        assert set(extension_ids) == set(host_extension_ids)
+    for plugin_ids in process_plugin_ids:
+        assert set(plugin_ids) == set(host_plugin_ids)
 
 
-def load_extension_ids(_: Optional[int] = None) -> List[str]:
+def load_plugin_ids(_: Optional[int] = None) -> List[str]:
     grappler = EntryPointGrappler()
-    return [ext.extension_id for ext in grappler.find()]
+    return [ext.plugin_id for ext in grappler.find()]

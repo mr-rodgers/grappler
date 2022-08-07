@@ -1,6 +1,6 @@
 # grappler
 
-Load extensions into Python apps
+Load plugins into Python apps
 
 
 ## Documentation

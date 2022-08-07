@@ -14,7 +14,7 @@ T = TypeVar("T")
 
 class Package(NamedTuple):
     """
-    A logical collection of extensions
+    A logical collection of plugins
     """
 
     name: str
@@ -23,13 +23,13 @@ class Package(NamedTuple):
     platform: Optional[str]
 
 
-class Extension(NamedTuple):
+class Plugin(NamedTuple):
     """
     An external, loadable Python object
     """
 
     grappler_id: str
-    extension_id: str
+    plugin_id: str
     package: Package
     topics: Tuple[str, ...]
 
@@ -39,17 +39,17 @@ class Grappler(Protocol):
     def id(self) -> str:
         """A globally unique identifier for the grappler."""
 
-    def find(self, topic: Optional[str] = None) -> Iterator[Extension]:
+    def find(self, topic: Optional[str] = None) -> Iterator[Plugin]:
         """
-        Iterate over extensions in this grappler's range.
+        Iterate over Plugins in this grappler's range.
 
-        Extensions yielded may only be yielded from this same grappler instance.
+        plugins yielded may only be yielded from this same grappler instance.
         """
 
-    def load(self, extension: Extension) -> Any:
-        """Load an object out of an extension.
+    def load(self, plugin: Plugin) -> Any:
+        """Load an object out of an plugin.
 
-        May raise an UnknownExtensionError if the extension type is unknown.
+        May raise an UnknownPluginError if the plugin type is unknown.
         """
 
 
@@ -61,14 +61,14 @@ class ResourcefulGrappler(Grappler, ContextManager[Grappler]):
     """
 
 
-class UnknownExtensionError(LookupError):
-    """Raised when a grappler is asked to load an extension it doesn't know how to."""
+class UnknownPluginError(LookupError):
+    """Raised when a grappler is asked to load an plugin it doesn't know how to."""
 
-    def __init__(self, extension: Extension, grappler: Grappler) -> None:
+    def __init__(self, plugin: Plugin, grappler: Grappler) -> None:
         super().__init__(
             self,
             f"Grappler (id={repr(grappler.id)}) does not know "
-            "how to load extension: {extension}",
+            "how to load plugin: {plugin}",
         )
-        self.extension = extension
+        self.plugin = plugin
         self.grappler = grappler

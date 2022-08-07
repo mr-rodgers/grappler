@@ -29,15 +29,15 @@ def test_generates_accurate_package(
 ) -> None:
     grappler = StaticGrappler((["foo"], 1), package=input_package)
 
-    extension = next(grappler.find())
-    assert extension.package == expected_package
+    plugin = next(grappler.find())
+    assert plugin.package == expected_package
 
 
-def test_iterated_extension_properties(grappler: StaticGrappler) -> None:
-    assert {extension.grappler_id for extension in grappler.find()} == {
+def test_iterated_plugin_properties(grappler: StaticGrappler) -> None:
+    assert {plugin.grappler_id for plugin in grappler.find()} == {
         "grappler.grapplers.static"
     }
-    assert [extension.topics for extension in grappler.find()] == [
+    assert [plugin.topics for plugin in grappler.find()] == [
         ("topic.1",),
         ("topic.1", "topic.2"),
         ("topic.2",),
@@ -56,13 +56,11 @@ def test_iterated_extension_properties(grappler: StaticGrappler) -> None:
 def test_find_by_topic(
     topic: str, expected_values: Sequence[str], grappler: StaticGrappler
 ) -> None:
-    assert [
-        grappler.load(extension) for extension in grappler.find(topic)
-    ] == expected_values
+    assert [grappler.load(plugin) for plugin in grappler.find(topic)] == expected_values
 
 
-def test_iterated_extensions_can_be_loaded(grappler: StaticGrappler) -> None:
-    assert [grappler.load(extension) for extension in grappler.find()] == [
+def test_iterated_plugins_can_be_loaded(grappler: StaticGrappler) -> None:
+    assert [grappler.load(plugin) for plugin in grappler.find()] == [
         "foo",
         "bar",
         "baz",
