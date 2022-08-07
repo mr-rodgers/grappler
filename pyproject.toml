@@ -1,7 +1,7 @@
 [project]
 name = "grappler"
 version = "0.1.0"
-description = "Load extensions into Python apps"
+description = "Load plugins into Python apps"
 authors = [{ name = "Te-je Rodgers", email = "tjd.rodgers@gmail.com" }]
 dependencies = [
     "typing-extensions>=4.3.0",
