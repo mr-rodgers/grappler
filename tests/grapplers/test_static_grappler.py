@@ -5,6 +5,8 @@ import pytest
 from grappler import Package
 from grappler.grapplers import StaticGrappler
 
+from .conftest import PluginExtractorFunction, PluginIteratorFunction
+
 
 @pytest.fixture
 def grappler() -> StaticGrappler:
@@ -25,19 +27,22 @@ def grappler() -> StaticGrappler:
     ],
 )
 def test_generates_accurate_package(
-    input_package: Optional[Package], expected_package: Package
+    input_package: Optional[Package],
+    expected_package: Package,
+    get_plugins: PluginExtractorFunction,
 ) -> None:
     grappler = StaticGrappler((["foo"], 1), package=input_package)
-
-    plugin = next(grappler.find())
+    plugin = next(iter(get_plugins(grappler).values()))
     assert plugin.package == expected_package
 
 
-def test_iterated_plugin_properties(grappler: StaticGrappler) -> None:
-    assert {plugin.grappler_id for plugin in grappler.find()} == {
-        "grappler.grapplers.static"
-    }
-    assert [plugin.topics for plugin in grappler.find()] == [
+def test_iterated_plugin_properties(
+    grappler: StaticGrappler, get_plugins: PluginExtractorFunction
+) -> None:
+    plugins = get_plugins(grappler)
+
+    assert {plugin.grappler_id for plugin in plugins.values()} == {grappler.id}
+    assert [plugin.topics for plugin in plugins.values()] == [
         ("topic.1",),
         ("topic.1", "topic.2"),
         ("topic.2",),
@@ -54,13 +59,20 @@ def test_iterated_plugin_properties(grappler: StaticGrappler) -> None:
     ],
 )
 def test_find_by_topic(
-    topic: str, expected_values: Sequence[str], grappler: StaticGrappler
+    topic: Optional[str],
+    expected_values: Sequence[str],
+    grappler: StaticGrappler,
+    iter_plugins: PluginIteratorFunction,
 ) -> None:
-    assert [grappler.load(plugin) for plugin in grappler.find(topic)] == expected_values
+    assert [
+        grappler.load(plugin) for plugin in iter_plugins(grappler, topic=topic)
+    ] == expected_values
 
 
-def test_iterated_plugins_can_be_loaded(grappler: StaticGrappler) -> None:
-    assert [grappler.load(plugin) for plugin in grappler.find()] == [
+def test_iterated_plugins_can_be_loaded(
+    grappler: StaticGrappler, iter_plugins: PluginIteratorFunction
+) -> None:
+    assert [grappler.load(plugin) for plugin in iter_plugins(grappler)] == [
         "foo",
         "bar",
         "baz",

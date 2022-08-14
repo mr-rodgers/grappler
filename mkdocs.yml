@@ -9,6 +9,7 @@ nav:
   - 'API Reference':
     - api/core.md
     - api/grapplers.md
+    - api/bases.md
 
 watch:
   - grappler

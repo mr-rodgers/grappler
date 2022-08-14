@@ -1,10 +1,14 @@
-from typing import Any, Collection, Iterator, Optional, Tuple
+from typing import Any, Collection, Dict, Iterable, Optional, Tuple, TypeVar
 from uuid import uuid4
 
 from grappler._types import Package, Plugin, UnknownPluginError
 
+from .bases._basic import BasicGrappler
 
-class StaticGrappler:
+T_ItConfig = TypeVar("T_ItConfig")
+
+
+class StaticGrappler(BasicGrappler[Dict[Plugin, Any]]):
     """
     A grappler for loading "plugins" supplied by the host
     application.
@@ -20,19 +24,29 @@ class StaticGrappler:
     constructor, then this is used. Otherwise, a default internal
     package is used (`StaticGrappler.internal_package`).
 
+
+    Usage:
+
+    ```python
+    grappler = StaticGrappler(
+        (["list", "of", "topics"], obj),
+        ...
+    )
+    grappler.add_plugin(["topics", "list"], obj2)
+    ```
+
     """
 
     internal_package = Package(
         "Static Plugins",
         "0.0.0",
-        "grappler.grapplers.static.internal-package",
+        "grappler.grapplers.static-grappler.internal-package",
         None,
     )
 
     def __init__(
         self, *objs: Tuple[Collection[str], Any], package: Optional[Package] = None
     ) -> None:
-        self.id = "grappler.grapplers.static"
         self.package = package or self.internal_package
 
         self.cache = {
@@ -40,20 +54,29 @@ class StaticGrappler:
             for topics, obj in objs
         }
 
-    def add_plugin(self, topics: Collection[str], obj: Any) -> None:
+    def add_plugin(self, topics: Collection[str], plugin_obj: Any) -> None:
+        """Add an static plugin to the grappler."""
         plugin = Plugin(self.id, str(uuid4()), self.package, tuple(topics))
-        self.cache[plugin] = obj
+        self.cache[plugin] = plugin_obj
 
     def clear(self) -> None:
         self.cache.clear()
 
-    def find(self, topic: Optional[str] = None) -> Iterator[Plugin]:
-        for plugin in self.cache:
-            if topic is None or topic in plugin.topics:
-                yield plugin
+    @property
+    def id(self) -> str:
+        return "grappler.grapplers.static-grappler"
 
-    def load(self, plugin: Plugin) -> Any:
+    def create_iteration_context(
+        self, topic: Optional[str]
+    ) -> Tuple[Iterable[Plugin], Dict[Plugin, Any]]:
+        cache = {**self.cache}
+        return (
+            (plugin for plugin in cache if topic is None or topic in plugin.topics),
+            cache,
+        )
+
+    def load_from_context(self, plugin: Plugin, context: Dict[Plugin, Any]) -> Any:
         try:
-            return self.cache[plugin]
-        except KeyError:
+            return context[plugin]
+        except LookupError:
             raise UnknownPluginError(plugin, self)
