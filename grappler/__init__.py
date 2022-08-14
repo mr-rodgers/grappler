@@ -6,13 +6,12 @@ started using grappler. The main entry point is the
 """
 
 from ._hook import Hook
-from ._types import Grappler, Package, Plugin, ResourcefulGrappler, UnknownPluginError
+from ._types import Grappler, Package, Plugin, UnknownPluginError
 
 __all__ = [
     "Hook",
     "Plugin",
     "Grappler",
     "Package",
-    "ResourcefulGrappler",
     "UnknownPluginError",
 ]

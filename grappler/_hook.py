@@ -24,11 +24,12 @@ class Hook(Generic[T]):
         return self.topic in plugin.topics
 
     def _iter_grappler(self, grappler: Grappler) -> Generator[T, None, None]:
-        for plugin in grappler.find(self.topic):
-            if self.can_support(plugin):
-                loaded_obj = grappler.load(plugin)
-                if self.__is_valid_instance(loaded_obj):
-                    yield loaded_obj
+        with grappler.find(self.topic) as plugins:
+            for plugin in plugins:
+                if self.can_support(plugin):
+                    loaded_obj = grappler.load(plugin)
+                    if self.__is_valid_instance(loaded_obj):
+                        yield loaded_obj
 
     def __is_valid_instance(self, value: Any) -> TypeGuard[T]:
         return True if self._type_arg is None else isinstance(value, self._type_arg)

@@ -39,7 +39,7 @@ class Grappler(Protocol):
     def id(self) -> str:
         """A globally unique identifier for the grappler."""
 
-    def find(self, topic: Optional[str] = None) -> Iterator[Plugin]:
+    def find(self, topic: Optional[str] = None) -> ContextManager[Iterator[Plugin]]:
         """
         Iterate over Plugins in this grappler's range.
 
@@ -51,14 +51,6 @@ class Grappler(Protocol):
 
         May raise an UnknownPluginError if the plugin type is unknown.
         """
-
-
-class ResourcefulGrappler(Grappler, ContextManager[Grappler]):
-    """A Grappler which can also be used as a context manager.
-
-    This is a protocol for grapplers which wish to setup and teardown
-    resources in `__enter__` and `__exit__` methods respectively.
-    """
 
 
 class UnknownPluginError(LookupError):
