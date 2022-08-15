@@ -1,3 +1,4 @@
+from contextlib import ExitStack
 from itertools import chain
 from typing import Any, Dict, Iterable, Optional, Tuple
 
@@ -52,7 +53,7 @@ class EntryPointGrappler(PluginPairGrapplerBase[metadata.EntryPoint]):
         self._groups = metadata.entry_points()
 
     def iter_plugins(
-        self, topic: Optional[str] = None
+        self, topic: Optional[str], _: ExitStack
     ) -> Iterable[Tuple[Plugin, metadata.EntryPoint]]:
         for entry_point in self._entry_points(topic=topic):
             if entry_point.dist is None:

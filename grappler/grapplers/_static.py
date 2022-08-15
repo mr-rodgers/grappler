@@ -1,3 +1,4 @@
+from contextlib import ExitStack
 from typing import Any, Collection, Dict, Iterable, Optional, Tuple, TypeVar
 from uuid import uuid4
 
@@ -67,7 +68,7 @@ class StaticGrappler(BasicGrappler[Dict[Plugin, Any]]):
         return "grappler.grapplers.static-grappler"
 
     def create_iteration_context(
-        self, topic: Optional[str]
+        self, topic: Optional[str], _: ExitStack
     ) -> Tuple[Iterable[Plugin], Dict[Plugin, Any]]:
         cache = {**self.cache}
         return (

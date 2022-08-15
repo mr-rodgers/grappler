@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from contextlib import ExitStack
 from functools import partial
 from typing import Any, Dict, Generic, Iterable, Optional, Tuple, TypeVar
 
@@ -26,7 +27,7 @@ class PluginPairGrapplerBase(
 
     @abstractmethod
     def iter_plugins(
-        self, topic: Optional[str] = None
+        self, topic: Optional[str], exit_stack: ExitStack, /
     ) -> Iterable[Tuple[Plugin, T_Cache]]:
         """
         Return an iterator for (plugin, pair) pairs.
@@ -47,13 +48,13 @@ class PluginPairGrapplerBase(
         """
 
     def create_iteration_context(
-        self, topic: Optional[str]
+        self, topic: Optional[str], exit_stack: ExitStack, /
     ) -> Tuple[Iterable[Plugin], Dict[Plugin, T_Cache]]:
         cache: Dict[Plugin, T_Cache] = {}
         return (
             map(
                 partial(self.__extract_plugin_and_cache, cache),
-                self.iter_plugins(topic),
+                self.iter_plugins(topic, exit_stack),
             ),
             cache,
         )
