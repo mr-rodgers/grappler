@@ -1,14 +1,16 @@
 from itertools import chain
-from typing import Any, Iterable, Iterator, Optional
+from typing import Any, Dict, Iterable, Iterator, Optional, Tuple
 
 import importlib_metadata as metadata
 
-from grappler import Grappler, Package, Plugin, UnknownPluginError
+from grappler import Package, Plugin
 
-from ._static import StaticGrappler
+from .bases import BasicGrappler
+
+EntryPointCache = Dict[Plugin, metadata.EntryPoint]
 
 
-class EntryPointGrappler(Grappler):
+class EntryPointGrappler(BasicGrappler[EntryPointCache]):
     """
     A Grappler for loading objects from entry points.
 
@@ -28,18 +30,43 @@ class EntryPointGrappler(Grappler):
     This makes the grappler suitable for use with
     [`BlacklistingGrappler`][grappler.grapplers.BlacklistingGrappler].
 
+
+    Usage:
+
+    ```python
+    grappler = EntryPointGrappler()
+    ```
+
     """  # noqa: E501
 
     id = "grappler.grapplers.entry_point"
     sep = "@:"
+    unknown_package = Package(
+        "Unknown Distribution",
+        "0.0.0",
+        "grappler.grapplers.entry-point-grappler.unknown-dist",
+        None,
+    )
 
     def __init__(self) -> None:
         self._groups = metadata.entry_points()
 
-    def find(self, topic: Optional[str] = None) -> Iterator[Plugin]:
+    def create_iteration_context(
+        self, topic: Optional[str]
+    ) -> Tuple[Iterable[Plugin], EntryPointCache]:
+        config: EntryPointCache = {}
+        return (self._iter_plugins(topic, config), config)
+
+    def load_from_context(self, plugin: Plugin, context: EntryPointCache) -> Any:
+        entry_point = context[plugin]
+        return entry_point.load()  # type: ignore
+
+    def _iter_plugins(
+        self, topic: Optional[str], config: EntryPointCache
+    ) -> Iterator[Plugin]:
         for entry_point in self._entry_points(topic=topic):
             if entry_point.dist is None:
-                package = StaticGrappler.internal_package
+                package = self.unknown_package
             else:
                 package = Package(
                     entry_point.dist.name,
@@ -48,32 +75,14 @@ class EntryPointGrappler(Grappler):
                     platform=None,
                 )
 
-            yield Plugin(
+            plugin = Plugin(
                 grappler_id=self.id,
-                plugin_id=self.sep.join(
-                    (
-                        entry_point.name,  # type: ignore
-                        entry_point.value,  # type: ignore
-                        entry_point.group,  # type: ignore
-                    )
-                ),
+                plugin_id=str(entry_point.value),  # type: ignore
                 package=package,
                 topics=(entry_point.group,),  # type: ignore
             )
-
-    def load(self, plugin: Plugin) -> Any:
-        splits = plugin.plugin_id.split(self.sep)
-
-        if len(splits) != 3:
-            raise UnknownPluginError(plugin, self)
-
-        name, value, group = splits
-        entry_point = metadata.EntryPoint(
-            name=name,
-            value=value,
-            group=group,
-        )  # type: ignore
-        return entry_point.load()  # type: ignore
+            config[plugin] = entry_point
+            yield plugin
 
     def _entry_points(self, *, topic: Optional[str]) -> Iterable[metadata.EntryPoint]:
         if topic is None:

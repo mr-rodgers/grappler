@@ -6,7 +6,7 @@ started using grappler. The main entry point is the
 """
 
 from ._hook import Hook
-from ._types import Grappler, Package, Plugin, UnknownPluginError, WrapperGrappler
+from ._types import Grappler, Package, Plugin, UnknownPluginError
 
 __all__ = [
     "Hook",
@@ -14,5 +14,4 @@ __all__ = [
     "Grappler",
     "Package",
     "UnknownPluginError",
-    "WrapperGrappler",
 ]
