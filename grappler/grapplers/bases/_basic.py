@@ -63,6 +63,18 @@ class BasicGrappler(ABC, Generic[T_ItConfig]):
             context: Context value which was returned from
                      `create_iteration_context`.
         """
+        raise NotImplementedError
+
+    def cleanup_iteration_context(self, context: T_ItConfig) -> None:
+        """
+        Cleanup an iteration context.
+
+        This method can be used to cleanup dangling resources that
+        were created in
+        [`create_iteration_context()`][grappler.grapplers.bases.BasicGrappler.create_iteration_context].
+        The default implementation does nothing.
+
+        """
 
     @contextmanager
     def find(self, topic: Optional[str] = None) -> Iterator[Iterator[Plugin]]:
@@ -73,6 +85,7 @@ class BasicGrappler(ABC, Generic[T_ItConfig]):
             yield iter(plugins)
         finally:
             self.iteration_config.reset(reset_token)
+            self.cleanup_iteration_context(config)
 
     def load(self, plugin: Plugin) -> Any:
         try:
