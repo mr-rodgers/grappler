@@ -9,5 +9,6 @@ to properly implement the
 """
 
 from ._basic import BasicGrappler
+from ._plugin_pair import PluginPairGrapplerBase
 
-__all__ = ["BasicGrappler"]
+__all__ = ["BasicGrappler", "PluginPairGrapplerBase"]
