@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from typing import (
     Any,
     ContextManager,
@@ -23,7 +24,8 @@ class Package(NamedTuple):
     platform: Optional[str]
 
 
-class Plugin(NamedTuple):
+@dataclass(frozen=True)
+class Plugin:
     """
     An external, loadable Python object
     """
@@ -60,7 +62,7 @@ class UnknownPluginError(LookupError):
         super().__init__(
             self,
             f"Grappler (id={repr(grappler.id)}) does not know "
-            "how to load plugin: {plugin}",
+            f"how to load plugin: {plugin}",
         )
         self.plugin = plugin
         self.grappler = grappler

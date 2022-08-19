@@ -1,16 +1,17 @@
+from contextlib import ExitStack
 from itertools import chain
-from typing import Any, Dict, Iterable, Iterator, Optional, Tuple
+from typing import Any, Dict, Iterable, Optional, Tuple
 
 import importlib_metadata as metadata
 
 from grappler import Package, Plugin
 
-from .bases import BasicGrappler
+from .bases import PluginPairGrapplerBase
 
 EntryPointCache = Dict[Plugin, metadata.EntryPoint]
 
 
-class EntryPointGrappler(BasicGrappler[EntryPointCache]):
+class EntryPointGrappler(PluginPairGrapplerBase[metadata.EntryPoint]):
     """
     A Grappler for loading objects from entry points.
 
@@ -51,19 +52,9 @@ class EntryPointGrappler(BasicGrappler[EntryPointCache]):
     def __init__(self) -> None:
         self._groups = metadata.entry_points()
 
-    def create_iteration_context(
-        self, topic: Optional[str]
-    ) -> Tuple[Iterable[Plugin], EntryPointCache]:
-        config: EntryPointCache = {}
-        return (self._iter_plugins(topic, config), config)
-
-    def load_from_context(self, plugin: Plugin, context: EntryPointCache) -> Any:
-        entry_point = context[plugin]
-        return entry_point.load()  # type: ignore
-
-    def _iter_plugins(
-        self, topic: Optional[str], config: EntryPointCache
-    ) -> Iterator[Plugin]:
+    def iter_plugins(
+        self, topic: Optional[str], _: ExitStack
+    ) -> Iterable[Tuple[Plugin, metadata.EntryPoint]]:
         for entry_point in self._entry_points(topic=topic):
             if entry_point.dist is None:
                 package = self.unknown_package
@@ -81,8 +72,10 @@ class EntryPointGrappler(BasicGrappler[EntryPointCache]):
                 package=package,
                 topics=(entry_point.group,),  # type: ignore
             )
-            config[plugin] = entry_point
-            yield plugin
+            yield plugin, entry_point
+
+    def load_with_pair(self, _: Plugin, entry_point: metadata.EntryPoint, /) -> Any:
+        return entry_point.load()  # type: ignore
 
     def _entry_points(self, *, topic: Optional[str]) -> Iterable[metadata.EntryPoint]:
         if topic is None:
