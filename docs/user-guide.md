@@ -170,10 +170,10 @@ composite_grappler = (
         .source(EntryPointGrappler())
         .source(YourCustomSourceGrappler())
         .map(CachedGrappler())
-        .map(BouncerGrappler(), name="bouncer")
+        .map(BouncerGrappler())
 )
 
-@composite_grappler.configure(BouncerGrappler.checker, name="bouncer")
+@composite_grappler.configure(BouncerGrappler.checker)
 def block_grappler_plugins(plugin: Plugin) -> bool:
     return not plugin.package.name.startswith("grappler")
 
@@ -214,38 +214,19 @@ def block_plugins_in_blacklist(plugin: Plugin) -> bool:
 
 ```
 
-Checker functions can optionally received two additional
-arguments, which will be passed when they take an argument with the matching
-name.
-
-The first argument named `context` will
-receive a dictionary inside which they may store information that will survive
-a single use of the grappler (e.g. to iterate over a
-[hook](#hooks-and-topics)). This provides some checkers with the ability to
-store some contextual information in order to  operate properly.
-
-The second argument named `mode` will receive a
-[`BouncerGrappler.Mode`][grappler.grapplers.BouncerGrappler.Mode]. This can
-be used by checker functions which only need to block a plugin during either
-finding, or loading, but not both.
+Checker functions may only need to block a plugin during either
+finding, or loading, but not both. To do this, use the decorator with mode
+argument.
 
 For example, the following checker can be used to deduplicate finding plugins
-(when composing in such a way that causes duplicates):
+(when composing in such a way that creates duplicates):
 
 ```python
-@bouncer.checker
-def strip_duplicate_plugins(
-    plugin: Plugin,
-    *,
-    context: dict[str, Any],
-    mode: BouncerGrappler.Mode,
-) -> bool:
+@bouncer.checker(mode=BouncerGrappler.Mode.Find)
+def strip_duplicate_plugins(plugin: Plugin) -> bool:
     seen_plugins = context.setdefault("seen", set[Plugin]())
 
-    if mode == BouncerGrappler.Mode.Load:
-        return True
-
-    elif plugin in seen_plugins:
+    if plugin in seen_plugins:
         return False
 
     else:

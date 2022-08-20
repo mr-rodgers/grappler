@@ -50,6 +50,10 @@ plugins:
     default_handler: python
     handlers:
       python:
+        options:
+          merge_init_into_class: true
+          members_order: source
+
         rendering:
           show_source: true
           show_root_heading: true
