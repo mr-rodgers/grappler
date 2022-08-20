@@ -1,4 +1,4 @@
-from typing import Dict, Iterator, Optional, Protocol
+from typing import Any, Dict, Iterator, Optional, Protocol
 
 import pytest
 
@@ -16,6 +16,13 @@ class PluginExtractorFunction(Protocol):
     def __call__(
         self, grappler: Grappler, topic: Optional[str] = None
     ) -> Dict[str, Plugin]:
+        ...
+
+
+class PluginLoaderFunction(Protocol):
+    def __call__(
+        self, grappler: Grappler, topic: Optional[str] = None
+    ) -> Dict[Plugin, Any]:
         ...
 
 
@@ -39,3 +46,13 @@ def get_plugins(iter_plugins: PluginIteratorFunction) -> PluginExtractorFunction
         return {plugin.plugin_id: plugin for plugin in iter_plugins(grappler, topic)}
 
     return find_plugins
+
+
+@pytest.fixture
+def load_plugins(iter_plugins: PluginIteratorFunction) -> PluginLoaderFunction:
+    def _load(grappler: Grappler, topic: Optional[str] = None) -> Dict[Plugin, Any]:
+        return {
+            plugin: grappler.load(plugin) for plugin in iter_plugins(grappler, topic)
+        }
+
+    return _load
