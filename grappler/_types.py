@@ -34,6 +34,7 @@ class Plugin:
     plugin_id: str
     package: Package
     topics: Tuple[str, ...]
+    name: Optional[str]
 
 
 class Grappler(Protocol):
