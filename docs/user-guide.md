@@ -19,7 +19,8 @@ it for this predetermined purpose. Furthermore, you would expect plugins to
 advertise which specific behaviours they are capable of fitting, so that your
 application can load and use them correctly.
 
-Hooks are grappler's abstraction of a particular behaviour that you wish to
+[`Hooks`][grappler.Hook]
+are grappler's abstraction of a particular behaviour that you wish to
 load plugins for. When you need to load plugins for a particular behaviour,
 you define a hook and use it to load plugins, which you can interact with
 to perform the functions you need. The only requirement on the application
@@ -165,17 +166,17 @@ from grappler.grapplers import (
     EntryPointGrappler,
 )
 
+def block_grappler_plugins(plugin: Plugin) -> bool:
+    return not plugin.package.name.startswith("grappler")
+
 composite_grappler = (
     CompositeGrappler()
         .source(EntryPointGrappler())
         .source(YourCustomSourceGrappler())
         .map(CachedGrappler())
         .map(BouncerGrappler())
+        .configure(BouncerGrappler.checker, block_grappler_plugins)
 )
-
-@composite_grappler.configure(BouncerGrappler.checker)
-def block_grappler_plugins(plugin: Plugin) -> bool:
-    return not plugin.package.name.startswith("grappler")
 
 plugins = Hook("some.topic", grappler=composite_grappler)
 

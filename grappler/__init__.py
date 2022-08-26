@@ -5,8 +5,8 @@ started using grappler. The main entry point is the
 
 """
 
+from ._types import Grappler, Package, Plugin, UnknownPluginError  # isort: skip
 from ._hook import Hook
-from ._types import Grappler, Package, Plugin, UnknownPluginError
 
 __all__ = [
     "Hook",
