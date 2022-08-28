@@ -1,0 +1,28 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "*"
+
+jobs:
+  deploy-pypi:
+    name: Deploy PyPI
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: pdm-project/setup-pdm@main
+        name: Setup PDM
+        with:
+          python-version: "3.8"
+          enable-pep582: false
+
+      - name: Build Source and Wheels
+        run: pdm build
+
+      - name: Upload PyPI
+        run: |
+          pip install twine
+          twine upload --skip-existing -u __token__ -p ${{ secrets.PYPI_API_TOKEN }} dist/*
