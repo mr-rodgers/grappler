@@ -1,6 +1,6 @@
 [project]
 name = "grappler"
-version = "0.1.1rc3"
+version = "0.1.1rc4"
 description = "Load plugins into Python apps"
 authors = [{ name = "Te-je Rodgers", email = "tjd.rodgers@gmail.com" }]
 dependencies = [
@@ -30,6 +30,9 @@ source-includes = [
 [tool.pdm.scripts.commit-and-tag]
 shell = "git add pyproject.toml && git commit -m \"bump version: $(pdm show --version)\" && git tag \"$(pdm show --version)\""
 help = "commit the current version and tag it."
+[tool.pdm.scripts.tag-rc]
+shell = "pdm bump pre-release --pre rc && pdm run commit-and-tag"
+help = "bump version and tag a new release candidate"
 [tool.pdm.scripts.tag-release]
 shell = "pdm bump no-pre-release && pdm run commit-and-tag"
 help = "transition from release candidate to final release, and tag version in git."
