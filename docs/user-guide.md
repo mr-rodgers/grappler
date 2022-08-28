@@ -161,7 +161,6 @@ be passed to hook in order to load plugins from:
 from grappler import Hook, Plugin
 from grappler.grapplers import (
     BouncerGrappler,
-    CachedGrappler,
     CompositeGrappler,
     EntryPointGrappler,
 )
@@ -173,8 +172,7 @@ composite_grappler = (
     CompositeGrappler()
         .source(EntryPointGrappler())
         .source(YourCustomSourceGrappler())
-        .map(CachedGrappler())
-        .map(BouncerGrappler())
+        .wrap(BouncerGrappler())
         .configure(BouncerGrappler.checker, block_grappler_plugins)
 )
 

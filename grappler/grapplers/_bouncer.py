@@ -58,27 +58,31 @@ Checks = TypedDict("Checks", {"find": List[BounceCheck], "load": List[BounceChec
 
 
 class BouncerGrappler(PluginPairGrapplerBase[None]):
+    """
+    Restrict plugins from an inner grappler based on rules
+    defined as predicates.
+    """
+
     id = "grappler.grapplers.bouncer"
 
     ForbiddenPluginError = ForbiddenPluginError
 
     class Mode(Enum):
-        """Operating mode for checker functions.
-
-        For checker functions that should only be used during
-        the `find` operation of the grappler, use `BouncerGrappler.Mode.FIND`.
-
-        Or, for checker functions that should only be used during
-        the `load` operation of the grappler, use `BouncerGrappler.Mode.LOAD`.
-
-        Otherwise, use `BouncerGrappler.Mode.BOTH`.
-        """
+        """Operating mode for checker functions."""
 
         FIND = "find"
+        """For checker functions that should only be used during the grappler's
+        scan operation. A plugin that is blocked during this operation will
+        never be seen by grappler's client."""
+
         LOAD = "load"
+        """For checker functions that should only be used during the grappler's
+        load operation. If a plugin is blocked during this operation, an
+        exception will be raised when attempting to load it."""
+
         BOTH = "both"
 
-    def __init__(self, inner: Optional[Grappler] = None):
+    def __init__(self, inner: Optional[Grappler] = None) -> None:
         self.wrapped = inner
         self._checks = Checks(find=[], load=[])
 

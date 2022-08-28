@@ -27,7 +27,7 @@ for surface in hook:
     surface.paint({...})
 ```
 
-grappler supports mypy type hints, so the surface
+grappler supports type hints, and the surface
 objects returned from the hook above will be hinted as `Surface`
 instances.
 

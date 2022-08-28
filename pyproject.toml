@@ -1,6 +1,6 @@
 [project]
 name = "grappler"
-version = "0.1.0"
+version = "0.1.1rc3"
 description = "Load plugins into Python apps"
 authors = [{ name = "Te-je Rodgers", email = "tjd.rodgers@gmail.com" }]
 dependencies = [
@@ -12,12 +12,21 @@ readme = "README.md"
 license = { text = "GPLv3" }
 [project.optional-dependencies]
 
+[project.urls]
+Repository = "https://github.com/mr-rodgers/grappler"
+Documentation = "https://mr-rodgers.github.io/grappler/"
+
 [build-system]
 requires = ["pdm-pep517>=1.0.0"]
 build-backend = "pdm.pep517.api"
 
 [tool]
 [tool.pdm]
+source-includes = [
+    "docs/",
+    "tests/",
+    "mkdocs.yml"
+]
 [tool.pdm.dev-dependencies]
 dev = [
     "mypy>=0.971",
