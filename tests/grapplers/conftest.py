@@ -3,6 +3,9 @@ from typing import Any, Dict, Iterator, Optional, Protocol
 import pytest
 
 from grappler import Grappler, Plugin
+from grappler.grapplers import StaticGrappler
+
+_PLUGINS = [*[(["numbers", f"val-{i}"], i) for i in range(1000)]]
 
 
 class PluginIteratorFunction(Protocol):
@@ -56,3 +59,8 @@ def load_plugins(iter_plugins: PluginIteratorFunction) -> PluginLoaderFunction:
         }
 
     return _load
+
+
+@pytest.fixture
+def source_grappler() -> StaticGrappler:
+    return StaticGrappler(*_PLUGINS)

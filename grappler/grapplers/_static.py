@@ -1,5 +1,5 @@
 from contextlib import ExitStack
-from typing import Any, Collection, Dict, Iterable, Optional, Tuple, TypeVar
+from typing import Any, Collection, Dict, Iterable, Optional, Tuple, TypeVar, Union
 from uuid import uuid4
 
 from grappler._types import Package, Plugin, UnknownPluginError
@@ -51,13 +51,19 @@ class StaticGrappler(BasicGrappler[Dict[Plugin, Any]]):
         self.package = package or self.internal_package
 
         self.cache = {
-            Plugin(self.id, str(uuid4()), self.package, tuple(topics)): obj
+            Plugin(self.id, str(uuid4()), self.package, tuple(topics), name=None): obj
             for topics, obj in objs
         }
 
-    def add_plugin(self, topics: Collection[str], plugin_obj: Any) -> None:
+    def add_plugin(
+        self, item: Union[Collection[str], Plugin], /, plugin_obj: Any
+    ) -> None:
         """Add an static plugin to the grappler."""
-        plugin = Plugin(self.id, str(uuid4()), self.package, tuple(topics))
+        plugin = (
+            item
+            if isinstance(item, Plugin)
+            else Plugin(self.id, str(uuid4()), self.package, tuple(item), name=None)
+        )
         self.cache[plugin] = plugin_obj
 
     def clear(self) -> None:

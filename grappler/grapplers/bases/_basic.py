@@ -25,7 +25,7 @@ class BasicPlugin(Plugin):
 
     @classmethod
     def from_plugin(cls, config_id: int, plugin: Plugin, /) -> "BasicPlugin":
-        return BasicPlugin(*astuple(plugin)[:4], config_id, plugin)  # type: ignore
+        return BasicPlugin(*astuple(plugin)[:5], config_id, plugin)  # type: ignore
 
     @staticmethod
     def devolve(plugin: Plugin) -> Plugin:

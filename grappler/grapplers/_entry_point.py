@@ -71,6 +71,7 @@ class EntryPointGrappler(PluginPairGrapplerBase[metadata.EntryPoint]):
                 plugin_id=str(entry_point.value),  # type: ignore
                 package=package,
                 topics=(entry_point.group,),  # type: ignore
+                name=str(entry_point.name),  # type: ignore
             )
             yield plugin, entry_point
 
