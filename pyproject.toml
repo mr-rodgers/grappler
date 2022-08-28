@@ -1,6 +1,6 @@
 [project]
 name = "grappler"
-version = "0.1.1rc4"
+version = "0.1.1rc5"
 description = "Load plugins into Python apps"
 authors = [{ name = "Te-je Rodgers", email = "tjd.rodgers@gmail.com" }]
 dependencies = [
