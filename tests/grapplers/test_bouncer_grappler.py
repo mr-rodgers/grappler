@@ -8,13 +8,6 @@ from grappler.grapplers import BouncerGrappler, CompositeGrappler, StaticGrapple
 
 from .conftest import PluginLoaderFunction
 
-_PLUGINS = [*[(["numbers", f"val-{i}"], i) for i in range(1000)]]
-
-
-@pytest.fixture
-def source_grappler() -> StaticGrappler:
-    return StaticGrappler(*_PLUGINS)
-
 
 @pytest.fixture(params=["bare", "in-composite"])
 def grappler(request: Any, source_grappler: StaticGrappler) -> Grappler:

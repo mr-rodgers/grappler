@@ -188,7 +188,7 @@ class BlacklistingGrappler(BouncerGrappler, _ListGrapplerMixin):
         self,
         inner: Optional[Grappler] = None,
         items: Collection[Union[Plugin, Package]] = (),
-    ):
+    ) -> None:
         BouncerGrappler.__init__(self, inner)
         _ListGrapplerMixin.__init__(self, items)
 
@@ -279,7 +279,7 @@ class WhitelistingGrappler(BouncerGrappler, _ListGrapplerMixin):
         self,
         inner: Optional[Grappler] = None,
         items: Collection[Union[Plugin, Package]] = (),
-    ):
+    ) -> None:
         BouncerGrappler.__init__(self, inner)
         _ListGrapplerMixin.__init__(self, items)
 

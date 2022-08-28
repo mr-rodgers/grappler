@@ -1,6 +1,6 @@
 [project]
 name = "grappler"
-version = "0.1.0"
+version = "0.1.1rc3"
 description = "Load plugins into Python apps"
 authors = [{ name = "Te-je Rodgers", email = "tjd.rodgers@gmail.com" }]
 dependencies = [
@@ -12,12 +12,32 @@ readme = "README.md"
 license = { text = "GPLv3" }
 [project.optional-dependencies]
 
+[project.urls]
+Repository = "https://github.com/mr-rodgers/grappler"
+Documentation = "https://mr-rodgers.github.io/grappler/"
+
 [build-system]
 requires = ["pdm-pep517>=1.0.0"]
 build-backend = "pdm.pep517.api"
 
 [tool]
 [tool.pdm]
+source-includes = [
+    "docs/",
+    "tests/",
+    "mkdocs.yml"
+]
+[tool.pdm.scripts.commit-and-tag]
+shell = "git add pyproject.toml && git commit -m \"bump version: $(pdm show --version)\" && git tag \"$(pdm show --version)\""
+help = "commit the current version and tag it."
+[tool.pdm.scripts.tag-release]
+shell = "pdm bump no-pre-release && pdm run commit-and-tag"
+help = "transition from release candidate to final release, and tag version in git."
+[tool.pdm.scripts.tag-patch]
+shell = "pdm bump micro && pdm run commit-and-tag"
+help = "bump to a new patch version and tag version in git."
+
+
 [tool.pdm.dev-dependencies]
 dev = [
     "mypy>=0.971",

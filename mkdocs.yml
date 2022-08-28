@@ -2,6 +2,7 @@ site_name: grappler
 
 repo_url: https://github.com/mr-rodgers/grappler
 repo_name: mr-rodgers/grappler
+edit_uri: blob/main/docs
 
 nav:
   - 'index.md'
