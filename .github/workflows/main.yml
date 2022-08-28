@@ -70,3 +70,4 @@ jobs:
       - name: Install Dependencies
         run: pdm install
       - run: pdm run mkdocs gh-deploy --force
+    if: github.ref == 'refs/heads/main'
