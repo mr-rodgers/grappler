@@ -43,6 +43,18 @@ jobs:
       - uses: actions/checkout@v2
       - uses: pre-commit/action@v2.0.3
 
+  typechecks:
+    name: Type Checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: pdm-project/setup-pdm@main
+        name: Setup PDM
+      - name: Install Dependencies
+        run: pdm install -G dev
+      - name: Run Type Check (mypy)
+        run: pdm run mypy grappler
+
   deploy-docs:
     name: Deploy docs
     runs-on: ubuntu-latest
